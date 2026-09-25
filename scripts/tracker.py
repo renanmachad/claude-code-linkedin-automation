@@ -1,0 +1,192 @@
+#!/usr/bin/env python3
+"""Tracker de contatos com recrutadores (SQLite, sem dependências externas)."""
+import argparse
+import os
+import sqlite3
+import sys
+from datetime import datetime, timedelta
+
+DB_PATH = os.environ.get(
+    "JOB_OUTREACH_DB",
+    os.path.join(os.path.expanduser("~"), ".linkedin-job-outreach", "tracker.db"),
+)
+STATUSES = ("sent", "replied", "interview", "rejected", "ghosted")
+
+
+def connect():
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+    con.execute(
+        """CREATE TABLE IF NOT EXISTS contacts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            company TEXT,
+            role TEXT,
+            url TEXT,
+            channel TEXT,
+            score INTEGER,
+            status TEXT NOT NULL DEFAULT 'sent',
+            notes TEXT,
+            contacted_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )"""
+    )
+    return con
+
+
+def now():
+    return datetime.now().isoformat(timespec="seconds")
+
+
+def fmt(row):
+    return (
+        f"#{row['id']} | {row['contacted_at'][:10]} | {row['status']:<9} | "
+        f"{row['name']} @ {row['company'] or '-'} | {row['role'] or '-'} | "
+        f"nota {row['score'] if row['score'] is not None else '-'} | {row['channel'] or '-'}"
+        + (f" | {row['notes']}" if row["notes"] else "")
+    )
+
+
+def cmd_add(a, con):
+    ts = now()
+    cur = con.execute(
+        "INSERT INTO contacts (name, company, role, url, channel, score, status, notes, contacted_at, updated_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, 'sent', ?, ?, ?)",
+        (a.name, a.company, a.role, a.url, a.channel, a.score, a.notes, ts, ts),
+    )
+    con.commit()
+    print(f"Registrado #{cur.lastrowid}: {a.name} @ {a.company or '-'}")
+
+
+def cmd_check(a, con):
+    clauses, params = [], []
+    if a.name:
+        clauses.append("LOWER(name) = LOWER(?)")
+        params.append(a.name.strip())
+    if a.url:
+        clauses.append("url = ?")
+        params.append(a.url.strip())
+    if not clauses:
+        sys.exit("Informe --name ou --url")
+    rows = con.execute(
+        f"SELECT * FROM contacts WHERE {' OR '.join(clauses)} ORDER BY contacted_at DESC", params
+    ).fetchall()
+    if a.company:
+        company_rows = con.execute(
+            "SELECT * FROM contacts WHERE LOWER(company) = LOWER(?) ORDER BY contacted_at DESC",
+            (a.company.strip(),),
+        ).fetchall()
+    else:
+        company_rows = []
+    if not rows and not company_rows:
+        print("NOVO: nenhum contato anterior")
+        return
+    limit = (datetime.now() - timedelta(days=a.days)).isoformat()
+    if rows:
+        recent = [r for r in rows if r["contacted_at"] >= limit]
+        print(f"JA_CONTATADO_RECENTE (≤{a.days}d)" if recent else "CONTATADO_ANTES")
+    else:
+        print("RECRUTADOR_NOVO_EMPRESA_JA_CONTATADA (avalie se vale abordar outra pessoa da mesma empresa)")
+    for r in rows:
+        print("  recrutador: " + fmt(r))
+    others = [r for r in company_rows if r["id"] not in {x["id"] for x in rows}]
+    for r in others:
+        print("  mesma empresa: " + fmt(r))
+
+
+def cmd_list(a, con):
+    q, params = "SELECT * FROM contacts WHERE 1=1", []
+    if a.status:
+        q += " AND status = ?"
+        params.append(a.status)
+    if a.older_than is not None:
+        q += " AND updated_at <= ?"
+        params.append((datetime.now() - timedelta(days=a.older_than)).isoformat())
+    q += " ORDER BY contacted_at DESC"
+    rows = con.execute(q, params).fetchall()
+    if not rows:
+        print("Nenhum registro")
+    for r in rows:
+        print(fmt(r))
+
+
+def cmd_update(a, con):
+    row = con.execute("SELECT * FROM contacts WHERE id = ?", (a.id,)).fetchone()
+    if not row:
+        sys.exit(f"ID {a.id} não encontrado")
+    notes = row["notes"]
+    if a.notes:
+        notes = f"{notes} / {a.notes}" if notes else a.notes
+    con.execute(
+        "UPDATE contacts SET status = ?, notes = ?, updated_at = ? WHERE id = ?",
+        (a.status, notes, now(), a.id),
+    )
+    con.commit()
+    print(f"#{a.id} -> {a.status}")
+
+
+def cmd_stats(a, con):
+    total = con.execute("SELECT COUNT(*) FROM contacts").fetchone()[0]
+    print(f"Total de contatos: {total}")
+    for s in STATUSES:
+        n = con.execute("SELECT COUNT(*) FROM contacts WHERE status = ?", (s,)).fetchone()[0]
+        pct = f" ({n / total:.0%})" if total else ""
+        print(f"  {s:<9} {n}{pct}")
+
+
+def cmd_today(a, con):
+    start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    n = con.execute("SELECT COUNT(*) FROM contacts WHERE contacted_at >= ?", (start,)).fetchone()[0]
+    print(f"Enviados hoje: {n}/{a.limit} (restam {max(a.limit - n, 0)})")
+
+
+def main():
+    # Windows usa cp1252 no stdout redirecionado; "≤" e nomes acentuados quebrariam o print
+    sys.stdout.reconfigure(encoding="utf-8")
+    p = argparse.ArgumentParser(description=__doc__)
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    s = sub.add_parser("add")
+    s.add_argument("--name", required=True)
+    s.add_argument("--company")
+    s.add_argument("--role")
+    s.add_argument("--url")
+    s.add_argument("--channel", choices=["dm", "comment", "invite", "email"])
+    s.add_argument("--score", type=int)
+    s.add_argument("--notes")
+
+    s = sub.add_parser("check")
+    s.add_argument("--name")
+    s.add_argument("--company")
+    s.add_argument("--url")
+    s.add_argument("--days", type=int, default=30)
+
+    s = sub.add_parser("list")
+    s.add_argument("--status", choices=STATUSES)
+    s.add_argument("--older-than", type=int, dest="older_than")
+
+    s = sub.add_parser("update")
+    s.add_argument("--id", type=int, required=True)
+    s.add_argument("--status", choices=STATUSES, required=True)
+    s.add_argument("--notes")
+
+    sub.add_parser("stats")
+
+    s = sub.add_parser("today")
+    s.add_argument("--limit", type=int, default=10)
+
+    a = p.parse_args()
+    con = connect()
+    {
+        "add": cmd_add,
+        "check": cmd_check,
+        "list": cmd_list,
+        "update": cmd_update,
+        "stats": cmd_stats,
+        "today": cmd_today,
+    }[a.cmd](a, con)
+
+
+if __name__ == "__main__":
+    main()
