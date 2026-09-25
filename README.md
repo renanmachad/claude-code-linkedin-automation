@@ -134,7 +134,7 @@ Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 
 | Pedido | O que acontece |
 |---|---|
-| `/linkedin-job-outreach:candidatura <link>` ou `me candidata nessa vaga: <link>` | Abre o link, mapeia o formulário e mostra o plano campo a campo; preenche depois do seu ok e só envia depois da revisão final |
+| `/linkedin-job-outreach:candidatura <link>` ou `me candidata nessa vaga: <link>` | Abre o link, mapeia o formulário e mostra o plano campo a campo; com seu "candidata", preenche e envia. Se algo fugir do plano, para antes de enviar |
 | `/linkedin-job-outreach:cv <caminho>` ou `lê meu CV` | Importa/relê o CV e atualiza a memória usada nas mensagens |
 | `configura meu perfil` | Configuração guiada do perfil (também roda sozinha no primeiro uso) |
 | `busca vagas` | Busca com os termos do seu perfil, priorizando posts de conexões de 1º grau, e devolve a lista para aprovação |
@@ -165,7 +165,7 @@ python scripts/tracker.py cv --import curriculo.pdf                   # copia o 
 - **Nada é enviado sem sua aprovação**, mensagem por mensagem, no chat. Antes de digitar, a skill lê o histórico da conversa e não duplica contato feito à mão.
 - **Risco de conta**: os termos do LinkedIn proíbem automação. A skill usa o seu navegador real, em ritmo lento, com teto diário de abordagens (padrão 10), e para imediatamente diante de CAPTCHA, aviso de atividade incomum ou tela de login. Isso reduz o risco, mas não elimina — use por sua conta.
 - **DM só para conexões de 1º grau** (sem Premium). Para os demais, o caminho é convite com nota de até 200 caracteres, e contas gratuitas têm um número limitado de notas por mês; quando acabam, a skill fecha o modal sem enviar e sugere alternativas.
-- **Candidaturas**: só em links que você passou ou aprovou no chat, com duas aprovações (antes de preencher e antes de enviar). Criar conta, login, senhas, códigos de verificação, CAPTCHA e números de documento ficam com você.
+- **Candidaturas**: só em links que você passou ou aprovou no chat, com uma aprovação por candidatura depois de ver o plano completo (várias podem ser aprovadas numa resposta). A busca já traz os planos das vagas com link de candidatura. Criar conta, login, senhas, códigos de verificação, CAPTCHA e números de documento ficam com você.
 - Posts que pedem para clonar repositório/rodar código antes de uma conversa real, cobram taxa ou pedem documentos são descartados como golpe (ver `references/red-flags.md`).
 
 ## Estrutura

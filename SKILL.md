@@ -78,13 +78,13 @@ Mensagem (<N> caracteres):
 <texto exato que será enviado>
 ```
 
-Depois, **Descartadas** (uma linha: empresa — motivo) e **Já contatados** (uma linha: nome — data do último contato). Termine com: "Quais envio? (ex.: 1, 3, 4 ou 'todas')" e quantas abordagens restam hoje.
+Depois, **Descartadas** (uma linha: empresa — motivo) e **Já contatados** (uma linha: nome — data do último contato). Termine com: "Quais envio e em quais me candidato? (ex.: 'manda 1, 3 e 4; candidata 2' ou 'tudo')" e quantas abordagens restam hoje. "tudo" aprova as mensagens e os planos de candidatura mostrados nesta lista, e nada além deles.
 
 Não invente dados: se o post não tem nome do recrutador, escreva "não identificado". Se a empresa não aparece, não chute. Não inclua na mensagem tecnologia ou experiência que não está no perfil nem na memória do CV; se a vaga pede algo que falta, cite no Fit. Prefira os **Ganchos para mensagens** da memória do CV quando casarem com a vaga.
 
 ## Follow-up e status
 
-- Para se candidatar por link (formulários em Greenhouse, Lever, Workday, Gupy, Easy Apply etc.), siga `${CLAUDE_SKILL_DIR}/skills/candidatura/SKILL.md` (também `/linkedin-job-outreach:candidatura <link>`). Quando um post pedir candidatura por link, mostre o link na lista; a candidatura só começa se o usuário aprovar aquele link explicitamente (ex.: "candidata na 2").
+- Para se candidatar por link (formulários em Greenhouse, Lever, Workday, Gupy, Easy Apply etc.), siga `${CLAUDE_SKILL_DIR}/skills/candidatura/SKILL.md` (também `/linkedin-job-outreach:candidatura <link>`). Quando um post com nota ≥ 6 pedir candidatura por link, abra o link (só leitura, até 5 por busca), faça os passos 1–5 do fluxo de candidatura e inclua o plano de preenchimento na lista, abaixo da mensagem. O usuário aprova tudo numa resposta (ex.: "manda 1 e 3, candidata 2"). Formulário que exige conta/login: marque "precisa de login seu" em vez do plano. Nada é digitado no formulário até "candidata" para aquele ID.
 - Para importar ou reler o CV, siga `${CLAUDE_SKILL_DIR}/skills/cv/SKILL.md` (também `/linkedin-job-outreach:cv <caminho>`).
 - Para follow-up, siga `${CLAUDE_SKILL_DIR}/skills/follow-up/SKILL.md` (também disponível como `/linkedin-job-outreach:follow-up`): ele percorre as DMs, separa as conversas sobre vaga e escreve o follow-up no idioma e tom de cada conversa. Follow-up também precisa de aprovação antes do envio e conta no limite diário.
 - `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" list --status sent --older-than 7` lista, só pelo tracker, quem não respondeu em 7+ dias.
