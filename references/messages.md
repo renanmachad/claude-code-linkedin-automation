@@ -37,7 +37,7 @@
 
 ## Follow-up (7+ dias sem resposta)
 
-Uma única vez, 1–2 frases, sem cobrança:
+Uma única vez, 1–2 frases, sem cobrança, no idioma e no tom da conversa (saudação, formalidade e emojis iguais aos já usados). Detalhes em `skills/follow-up/SKILL.md`:
 
 > Oi, Mariana! Retomando sobre a vaga de Backend Sênior — sigo com interesse. Se já tiver sido preenchida, sem problemas.
 

@@ -1,7 +1,7 @@
 {
   "name": "linkedin-job-outreach",
   "displayName": "LinkedIn Job Outreach",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Busca vagas no LinkedIn pelo Claude in Chrome, faz triagem, escreve mensagens para recrutadores e envia só as que você aprovar.",
   "author": {
     "name": "Renan Machado Pinho",
@@ -10,5 +10,6 @@
   "homepage": "https://github.com/renanmachad/claude-code-linkedin-automation",
   "repository": "https://github.com/renanmachad/claude-code-linkedin-automation",
   "license": "MIT",
+  "skills": ["./"],
   "keywords": ["linkedin", "jobs", "outreach", "recruiter"]
 }

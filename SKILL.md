@@ -82,7 +82,8 @@ Não invente dados: se o post não tem nome do recrutador, escreva "não identif
 
 ## Follow-up e status
 
-- `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" list --status sent --older-than 7` lista quem não respondeu em 7+ dias; gere follow-up curto (ver `${CLAUDE_SKILL_DIR}/references/messages.md`). Follow-up também precisa de aprovação antes do envio e conta no limite diário.
+- Para follow-up, siga `${CLAUDE_SKILL_DIR}/skills/follow-up/SKILL.md` (também disponível como `/linkedin-job-outreach:follow-up`): ele percorre as DMs, separa as conversas sobre vaga e escreve o follow-up no idioma e tom de cada conversa. Follow-up também precisa de aprovação antes do envio e conta no limite diário.
+- `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" list --status sent --older-than 7` lista, só pelo tracker, quem não respondeu em 7+ dias.
 - `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" update --id <id> --status replied|interview|rejected|ghosted` atualiza o status quando o usuário contar o que aconteceu.
 - `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" stats` resume o funil.
 

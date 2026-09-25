@@ -74,7 +74,7 @@ Seu perfil e o histórico de contatos ficam em `~/.linkedin-job-outreach/`, fora
 
 ### Alternativa — clonar como skill avulsa
 
-Útil para quem quer editar a skill em si (regras, mensagens, red flags).
+Útil para quem quer editar a skill em si (regras, mensagens, red flags). Nesse modo o comando `/linkedin-job-outreach:follow-up` não aparece, mas pedir "faz follow-up das minhas DMs" funciona do mesmo jeito.
 
 ```bash
 git clone https://github.com/renanmachad/claude-code-linkedin-automation.git ~/.claude/skills/linkedin-job-outreach
@@ -120,7 +120,7 @@ Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 | `analisa esta vaga: <url ou texto do post>` | Triagem e mensagem para um post específico |
 | `processa meus alertas de vaga do Gmail` | Lê os alertas dos últimos 3 dias e faz a triagem |
 | `manda 1, 3 e 4` | Envia só as mensagens aprovadas e registra no tracker |
-| `quem não respondeu?` | Lista contatos sem resposta há 7+ dias e sugere follow-up |
+| `/linkedin-job-outreach:follow-up` ou `faz follow-up das minhas DMs` | Percorre suas DMs, separa as conversas sobre vaga, identifica as paradas há 7+ dias e escreve um follow-up no idioma e tom de cada conversa; também aponta quem está esperando resposta sua. Aceita outro prazo: `/linkedin-job-outreach:follow-up 10` |
 | `a Fulana respondeu` / `tenho entrevista com a Empresa X` | Atualiza o status no tracker |
 
 ### Tracker (também dá para usar direto)
@@ -147,6 +147,7 @@ python scripts/tracker.py profile                                     # caminho 
 
 ```
 SKILL.md                          # fluxo e regras que o Claude segue
+skills/follow-up/SKILL.md         # comando de follow-up das DMs
 references/profile.template.md    # modelo do perfil (o seu fica em ~/.linkedin-job-outreach/)
 references/messages.md            # regras e exemplos de mensagem
 references/red-flags.md           # padrões de golpe
