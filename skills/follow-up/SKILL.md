@@ -22,7 +22,7 @@ Dias sem resposta para considerar a conversa parada: o número passado em `$ARGU
 
 ## Fluxo
 
-1. **Carregar perfil**: rode o tracker com `profile` e leia o arquivo indicado. Se `CRIADO`/`INCOMPLETO`, faça a configuração do perfil da skill principal antes.
+1. **Carregar perfil**: rode o tracker com `profile` e leia o arquivo indicado. Se `CRIADO`/`INCOMPLETO`, faça a configuração do perfil da skill principal antes. Rode também `cv` e, se `MEMORIA` indicar `existe`, leia a memória do CV.
 2. **Abrir a caixa de mensagens**: `https://www.linkedin.com/messaging/`. Leia a lista de conversas com `get_page_text`/`read_page`. Ignore itens "Sponsored"/patrocinados, caixas de páginas (Page inboxes) e conversas em grupo.
 3. **Delimitar o escopo**: conversas com última atividade nos últimos 60 dias, no máximo 30 por execução. Role a lista no máximo ~5 vezes. Se houver mais, diga quantas ficaram de fora e ofereça continuar depois.
 4. **Ler cada conversa** (uma por vez, com `wait` de alguns segundos entre elas): abra a conversa e leia o histórico inteiro, com datas e quem enviou cada mensagem.
@@ -51,7 +51,7 @@ O follow-up tem que parecer escrito pela mesma pessoa, na mesma conversa:
 - **Registro**: copie o nível de formalidade do usuário e do recrutador — saudação que já foi usada ("Oi, Carlos!" / "Olá, Carlos" / "Hi Bruna"), você/tu, uso ou não de emojis e exclamações. Se ninguém usou emoji, não use.
 - **Contexto concreto**: retome o que ficou pendente com as palavras da conversa (a vaga pelo nome que foi usado, o CV enviado, a pergunta sobre PJ que ficou sem resposta). Nunca invente andamento (entrevista, conversa com gestor) que não aparece no histórico.
 - **Tamanho**: 1–2 frases, sem cobrança nem culpa ("sigo com interesse", "se já tiver sido preenchida, sem problemas"). Termine com uma pergunta simples ou deixando a porta aberta.
-- **Nada novo sobre o perfil** além do que está no perfil do usuário; não repita o pitch inteiro da primeira mensagem.
+- **Nada novo sobre o perfil** além do que está no perfil do usuário ou na memória do CV (um fato do CV que responda a algo da conversa pode entrar em meia frase); não repita o pitch inteiro da primeira mensagem.
 
 Exemplos (fictícios):
 

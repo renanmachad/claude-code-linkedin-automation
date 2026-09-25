@@ -70,11 +70,11 @@ claude plugin marketplace update renanmachad-plugins
 claude plugin marketplace remove renanmachad-plugins
 ```
 
-Seu perfil e o histórico de contatos ficam em `~/.linkedin-job-outreach/`, fora da pasta do plugin: atualizar ou remover o plugin não apaga nada disso.
+Seu perfil, seu CV e o histórico de contatos ficam em `~/.linkedin-job-outreach/`, fora da pasta do plugin: atualizar ou remover o plugin não apaga nada disso.
 
 ### Alternativa — clonar como skill avulsa
 
-Útil para quem quer editar a skill em si (regras, mensagens, red flags). Nesse modo o comando `/linkedin-job-outreach:follow-up` não aparece, mas pedir "faz follow-up das minhas DMs" funciona do mesmo jeito.
+Útil para quem quer editar a skill em si (regras, mensagens, red flags). Nesse modo os comandos `/linkedin-job-outreach:follow-up` e `/linkedin-job-outreach:cv` não aparecem, mas pedir "faz follow-up das minhas DMs" ou "lê meu CV em <caminho>" funciona do mesmo jeito.
 
 ```bash
 git clone https://github.com/renanmachad/claude-code-linkedin-automation.git ~/.claude/skills/linkedin-job-outreach
@@ -101,6 +101,16 @@ Me mostre o perfil completo antes de salvar.
 
 Prefere não deixar o Claude ler seu LinkedIn? Troque a segunda frase por "Me faça as perguntas no chat". Para ajustar depois, edite o arquivo direto ou peça "atualiza meu perfil de busca: agora aceito híbrido em São Paulo".
 
+### Importe seu CV (opcional, recomendado)
+
+Com o CV, as mensagens citam experiências e resultados concretos em vez de só a lista de tecnologias. Cole no Claude Code, trocando o caminho:
+
+```text
+/linkedin-job-outreach:cv C:\Users\voce\Documents\curriculo.pdf
+```
+
+Aceita PDF, DOCX, MD e TXT. O arquivo é copiado para `~/.linkedin-job-outreach/cv/` e lido; os fatos vão para `~/.linkedin-job-outreach/cv/memoria.md`, que a busca, as abordagens e o follow-up passam a usar. Mudou o currículo? Rode o comando de novo com o novo caminho, ou sem caminho para reler o mesmo arquivo — a memória é reescrita a cada execução e o Claude mostra o que mudou e sugere ajustes no perfil.
+
 O que cada seção do perfil controla:
 
 - **Quem é / Stack**: experiência e tecnologias. A skill não cita na mensagem nada que não esteja aqui.
@@ -114,6 +124,7 @@ Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 
 | Pedido | O que acontece |
 |---|---|
+| `/linkedin-job-outreach:cv <caminho>` ou `lê meu CV` | Importa/relê o CV e atualiza a memória usada nas mensagens |
 | `configura meu perfil` | Configuração guiada do perfil (também roda sozinha no primeiro uso) |
 | `busca vagas` | Busca com os termos do seu perfil, priorizando posts de conexões de 1º grau, e devolve a lista para aprovação |
 | `busca vagas de "senior react remote"` | Mesma coisa com os termos que você passar |
@@ -134,6 +145,7 @@ python scripts/tracker.py list --status sent --older-than 7           # sem resp
 python scripts/tracker.py update --id 3 --status interview            # replied|interview|rejected|ghosted
 python scripts/tracker.py stats                                       # funil
 python scripts/tracker.py profile                                     # caminho e status do seu perfil
+python scripts/tracker.py cv --import curriculo.pdf                   # copia o CV (sem --import: mostra o CV atual)
 ```
 
 ## Segurança e limites
@@ -148,6 +160,7 @@ python scripts/tracker.py profile                                     # caminho 
 ```
 SKILL.md                          # fluxo e regras que o Claude segue
 skills/follow-up/SKILL.md         # comando de follow-up das DMs
+skills/cv/SKILL.md                # comando de importar/ler o CV e gerar a memória
 references/profile.template.md    # modelo do perfil (o seu fica em ~/.linkedin-job-outreach/)
 references/messages.md            # regras e exemplos de mensagem
 references/red-flags.md           # padrões de golpe

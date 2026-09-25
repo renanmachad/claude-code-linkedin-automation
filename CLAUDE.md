@@ -15,6 +15,7 @@ A Claude skill (`linkedin-job-outreach`), not an application. `SKILL.md` is the 
 - `scripts/tracker.py` — stdlib-only SQLite CLI tracking recruiter contacts. DB defaults to `~/.linkedin-job-outreach/tracker.db`; override with env var `JOB_OUTREACH_DB` (use this for testing so the real DB isn't touched).
 
 - `skills/follow-up/SKILL.md` — second skill (`/linkedin-job-outreach:follow-up`): scans LinkedIn DMs, classifies job conversations, drafts follow-ups matching each chat's language/tone. It reuses the root skill's send rules and reaches shared files via `${CLAUDE_SKILL_DIR}/../../`. The root `SKILL.md` also points to it, so it works when the repo is cloned as a standalone skill (where nested skills aren't discovered).
+- `skills/cv/SKILL.md` — third skill (`/linkedin-job-outreach:cv [path]`): `tracker.py cv --import` copies the CV (PDF/DOCX/MD/TXT) to `~/.linkedin-job-outreach/cv/` (override: `JOB_OUTREACH_CV_DIR`), `cv --text` extracts DOCX via stdlib zipfile (PDF is read by Claude directly), and Claude rewrites `cv/memoria.md` from scratch each run. The main and follow-up skills read that memory as an allowed source of facts for messages, alongside the profile.
 - `.claude-plugin/plugin.json` + `.claude-plugin/marketplace.json` — the repo is both a plugin (root `SKILL.md` loads via `"skills": ["./"]`, alongside `skills/`) and a marketplace (`renanmachad-plugins`, plugin `source: "./"`). Bump `version` in `plugin.json` on every release, otherwise installed users stay on the old version. Validate with `claude plugin validate .`.
 
 In `SKILL.md`, always reference bundled files as `${CLAUDE_SKILL_DIR}/...` (e.g. `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py"`): the skill runs from the user's project directory, so bare relative paths break once installed.
@@ -33,6 +34,7 @@ python scripts/tracker.py update --id <id> --status replied [--notes ...]
 python scripts/tracker.py stats
 python scripts/tracker.py today [--limit 10]   # daily outreach cap check before sending
 python scripts/tracker.py profile               # path + status of the local profile
+python scripts/tracker.py cv [--import PATH] [--text]   # import/show CV, memory path, extracted text
 ```
 
 `check` and `profile` print a status token on its first line (`NOVO`, `JA_CONTATADO_RECENTE`, `CONTATADO_ANTES`, `RECRUTADOR_NOVO_EMPRESA_JA_CONTATADA`) that the skill workflow branches on — preserve these strings.

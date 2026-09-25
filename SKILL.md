@@ -39,6 +39,7 @@ Se não estiver logado, peça para o usuário fazer login — nunca digite crede
 ## Fluxo
 
 1. **Carregar perfil**: rode `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" profile` e leia o arquivo cujo caminho ele imprime (perfil, condições, termos de busca e critérios de nota). Se a saída começar com `CRIADO` ou `INCOMPLETO`, faça antes a **Configuração do perfil** (abaixo).
+   Depois rode `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" cv`: se `MEMORIA` indicar `existe`, leia o arquivo — os fatos do CV (experiências, números, ganchos) complementam o perfil nas notas e mensagens. Se imprimir `SEM_CV`, siga sem CV e, só na primeira vez da conversa, lembre que o usuário pode importar o CV com `/linkedin-job-outreach:cv <caminho>`.
 2. **Checar duplicatas**: para cada recrutador/empresa, rode
    `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" check --name "<recrutador>" --company "<empresa>" --url "<link do post>"`.
    Se já houver contato nos últimos 30 dias, marque como "já contatado" e não gere nova mensagem (a não ser que o usuário peça follow-up).
@@ -78,10 +79,11 @@ Mensagem (<N> caracteres):
 
 Depois, **Descartadas** (uma linha: empresa — motivo) e **Já contatados** (uma linha: nome — data do último contato). Termine com: "Quais envio? (ex.: 1, 3, 4 ou 'todas')" e quantas abordagens restam hoje.
 
-Não invente dados: se o post não tem nome do recrutador, escreva "não identificado". Se a empresa não aparece, não chute. Não inclua na mensagem tecnologia que não está no perfil; se a vaga pede algo que falta, cite no Fit.
+Não invente dados: se o post não tem nome do recrutador, escreva "não identificado". Se a empresa não aparece, não chute. Não inclua na mensagem tecnologia ou experiência que não está no perfil nem na memória do CV; se a vaga pede algo que falta, cite no Fit. Prefira os **Ganchos para mensagens** da memória do CV quando casarem com a vaga.
 
 ## Follow-up e status
 
+- Para importar ou reler o CV, siga `${CLAUDE_SKILL_DIR}/skills/cv/SKILL.md` (também `/linkedin-job-outreach:cv <caminho>`).
 - Para follow-up, siga `${CLAUDE_SKILL_DIR}/skills/follow-up/SKILL.md` (também disponível como `/linkedin-job-outreach:follow-up`): ele percorre as DMs, separa as conversas sobre vaga e escreve o follow-up no idioma e tom de cada conversa. Follow-up também precisa de aprovação antes do envio e conta no limite diário.
 - `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" list --status sent --older-than 7` lista, só pelo tracker, quem não respondeu em 7+ dias.
 - `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" update --id <id> --status replied|interview|rejected|ghosted` atualiza o status quando o usuário contar o que aconteceu.
@@ -93,7 +95,7 @@ O banco fica em `~/.linkedin-job-outreach/tracker.db` e o perfil em `~/.linkedin
 
 Quando `profile` retornar `CRIADO`/`INCOMPLETO`, ou o usuário pedir para configurar/atualizar o perfil:
 
-1. Ofereça duas fontes: (a) responder algumas perguntas no chat, ou (b) ler o próprio perfil do LinkedIn dele (`https://www.linkedin.com/in/me/`) no Chrome, só leitura.
+1. Ofereça as fontes: (a) responder algumas perguntas no chat, (b) ler o próprio perfil do LinkedIn dele (`https://www.linkedin.com/in/me/`) no Chrome, só leitura, ou (c) usar a memória do CV, se existir (ou importar o CV antes pelo fluxo de CV).
 2. Pergunte o que o LinkedIn não mostra: regime aceito (CLT/PJ/contractor), modelo (remoto/híbrido/presencial), localização e fuso, prioridades (ex.: moeda forte), idiomas, termos de busca e limite diário.
 3. Preencha o modelo mantendo a estrutura das seções e remova a linha `<!-- TEMPLATE ... -->`. Não invente experiência nem tecnologia.
 4. Mostre o perfil completo e só grave no caminho impresso por `profile` depois que o usuário confirmar. Rode `profile` de novo: deve imprimir `OK`.

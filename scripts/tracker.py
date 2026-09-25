@@ -5,6 +5,7 @@ import os
 import shutil
 import sqlite3
 import sys
+import zipfile
 from datetime import datetime, timedelta
 
 DB_PATH = os.environ.get(
@@ -19,6 +20,12 @@ TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "..", "references", "profile.template.md"
 )
 TEMPLATE_MARKER = "<!-- TEMPLATE"
+CV_DIR = os.environ.get(
+    "JOB_OUTREACH_CV_DIR",
+    os.path.join(os.path.expanduser("~"), ".linkedin-job-outreach", "cv"),
+)
+CV_MEMORY = os.path.join(CV_DIR, "memoria.md")
+CV_EXTS = (".pdf", ".docx", ".md", ".txt")
 STATUSES = ("sent", "replied", "interview", "rejected", "ghosted")
 
 
@@ -162,9 +169,75 @@ def cmd_profile(a, con):
     print(f"{status}: {PROFILE_PATH}")
 
 
+def stored_cv():
+    if not os.path.isdir(CV_DIR):
+        return None
+    for ext in CV_EXTS:
+        path = os.path.join(CV_DIR, "cv" + ext)
+        if os.path.exists(path):
+            return path
+    return None
+
+
+def docx_text(path):
+    # DOCX é um zip com XML; extrai parágrafos sem depender de python-docx
+    import re
+    from xml.etree import ElementTree
+
+    ns = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    with zipfile.ZipFile(path) as z:
+        root = ElementTree.fromstring(z.read("word/document.xml"))
+    lines = []
+    for par in root.iter(ns + "p"):
+        text = "".join(t.text or "" for t in par.iter(ns + "t"))
+        lines.append(text)
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
+
+
+def cmd_cv(a, con):
+    # CV fica fora da pasta da skill: atualizações do plugin apagam essa pasta
+    if a.import_path:
+        src = os.path.expanduser(a.import_path.strip().strip('"'))
+        ext = os.path.splitext(src)[1].lower()
+        if not os.path.isfile(src):
+            sys.exit(f"ERRO: arquivo não encontrado: {src}")
+        if ext not in CV_EXTS:
+            sys.exit(f"ERRO: formato {ext or '(sem extensão)'} não suportado; use {', '.join(CV_EXTS)}")
+        os.makedirs(CV_DIR, exist_ok=True)
+        dest = os.path.join(CV_DIR, "cv" + ext)
+        old = stored_cv()
+        if old and os.path.exists(dest) and os.path.samefile(src, dest):
+            print(f"JA_IMPORTADO: {dest}")
+        else:
+            if old:
+                os.remove(old)
+            shutil.copyfile(src, dest)
+            print(f"IMPORTADO: {dest}")
+    cv = stored_cv()
+    if not cv:
+        print("SEM_CV")
+        return
+    if not a.import_path:
+        mtime = datetime.fromtimestamp(os.path.getmtime(cv)).isoformat(timespec="seconds")
+        print(f"CV: {cv} (copiado em {mtime})")
+    print(f"MEMORIA: {CV_MEMORY} ({'existe' if os.path.exists(CV_MEMORY) else 'ausente'})")
+    if a.text:
+        ext = os.path.splitext(cv)[1]
+        if ext == ".pdf":
+            print(f"PDF: leia o arquivo diretamente: {cv}")
+        elif ext == ".docx":
+            print("--- TEXTO ---")
+            print(docx_text(cv))
+        else:
+            print("--- TEXTO ---")
+            with open(cv, encoding="utf-8", errors="replace") as f:
+                print(f.read())
+
+
 def main():
     # Windows usa cp1252 no stdout redirecionado; "≤" e nomes acentuados quebrariam o print
     sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -199,6 +272,10 @@ def main():
 
     sub.add_parser("profile")
 
+    s = sub.add_parser("cv")
+    s.add_argument("--import", dest="import_path", help="copia este arquivo como o CV atual")
+    s.add_argument("--text", action="store_true", help="imprime o texto do CV (DOCX/MD/TXT)")
+
     a = p.parse_args()
     con = connect()
     {
@@ -209,6 +286,7 @@ def main():
         "stats": cmd_stats,
         "today": cmd_today,
         "profile": cmd_profile,
+        "cv": cmd_cv,
     }[a.cmd](a, con)
 
 
