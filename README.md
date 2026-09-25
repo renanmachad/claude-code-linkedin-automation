@@ -23,11 +23,25 @@ Claude: [envia, confere na tela, registra no tracker]
 
 > **Windows:** instale o Python com `winget install -e --id Python.Python.3.12 --scope user` e desligue os aliases "python.exe"/"python3.exe" em *Configurações → Aplicativos → Configurações avançadas → Aliases de execução de aplicativo*; senão `python` abre a Microsoft Store.
 
-## Instalação
+## Instalação rápida
 
-### Como plugin (recomendado)
+### Opção 1 — colar um prompt no Claude Code
 
-Este repositório também é um marketplace de plugins do Claude Code. No terminal:
+Abra o Claude Code (terminal, app desktop ou IDE) e cole:
+
+```text
+Instale o plugin linkedin-job-outreach para mim:
+1. Rode `claude plugin marketplace add renanmachad/claude-code-linkedin-automation`.
+2. Rode `claude plugin install linkedin-job-outreach@renanmachad-plugins`.
+3. Confirme com `claude plugin details linkedin-job-outreach` que aparece "Skills (1) linkedin-job-outreach".
+4. Verifique se `python --version` retorna Python 3.8 ou superior; se não, me diga como instalar no meu sistema.
+Se o comando `claude` não estiver no PATH, pare e me diga para digitar eu mesmo
+`/plugin marketplace add renanmachad/claude-code-linkedin-automation` e
+`/plugin install linkedin-job-outreach@renanmachad-plugins`.
+No fim, me lembre de rodar /reload-plugins ou abrir uma nova sessão.
+```
+
+### Opção 2 — comandos no terminal
 
 ```bash
 claude plugin marketplace add renanmachad/claude-code-linkedin-automation
@@ -37,46 +51,62 @@ claude plugin marketplace add renanmachad/claude-code-linkedin-automation
 claude plugin install linkedin-job-outreach@renanmachad-plugins
 ```
 
-Ou, dentro de uma sessão do Claude Code: `/plugin marketplace add renanmachad/claude-code-linkedin-automation` e depois `/plugin install linkedin-job-outreach@renanmachad-plugins`.
+Ou, dentro de uma sessão do Claude Code:
 
-Para receber atualizações: `claude plugin marketplace update renanmachad-plugins`. Para remover: `claude plugin marketplace remove renanmachad-plugins`.
+```text
+/plugin marketplace add renanmachad/claude-code-linkedin-automation
+/plugin install linkedin-job-outreach@renanmachad-plugins
+```
 
-> Instalado como plugin, os arquivos ficam em `~/.claude/plugins/cache/` e são substituídos a cada atualização. Para personalizar o `references/profile.md` (próxima seção) sem perder a edição, prefira a instalação manual abaixo.
+Depois de instalar, rode `/reload-plugins` ou abra uma nova sessão.
 
-### Manual (clonando a pasta)
+### Atualizar e remover
 
-A skill também funciona clonada direto em uma pasta de skills do Claude Code:
+```bash
+claude plugin marketplace update renanmachad-plugins
+```
 
-**Para todos os seus projetos** (pasta pessoal):
+```bash
+claude plugin marketplace remove renanmachad-plugins
+```
+
+Seu perfil e o histórico de contatos ficam em `~/.linkedin-job-outreach/`, fora da pasta do plugin: atualizar ou remover o plugin não apaga nada disso.
+
+### Alternativa — clonar como skill avulsa
+
+Útil para quem quer editar a skill em si (regras, mensagens, red flags).
 
 ```bash
 git clone https://github.com/renanmachad/claude-code-linkedin-automation.git ~/.claude/skills/linkedin-job-outreach
 ```
 
-No Windows (PowerShell), o caminho equivalente é `$env:USERPROFILE\.claude\skills\linkedin-job-outreach`.
+No Windows (PowerShell):
 
-**Só em um projeto** (versionada junto com ele):
-
-```bash
-git clone https://github.com/renanmachad/claude-code-linkedin-automation.git .claude/skills/linkedin-job-outreach
+```powershell
+git clone https://github.com/renanmachad/claude-code-linkedin-automation.git "$env:USERPROFILE\.claude\skills\linkedin-job-outreach"
 ```
 
-Abra uma nova sessão do Claude Code (skills são carregadas no início da sessão) e peça `busca vagas` para testar. Para atualizar depois: `git pull` dentro da pasta da skill.
+Para atualizar: `git pull` dentro da pasta da skill.
 
-## Personalize antes de usar
+## Configure seu perfil
 
-A skill vem com o perfil do autor. **Edite `references/profile.md`** com os seus dados — é dele que saem a nota de fit e o conteúdo das mensagens:
+A skill não vem com perfil: a nota de fit, os termos de busca, o limite diário e o conteúdo das mensagens saem de `~/.linkedin-job-outreach/profile.md`, criado na primeira vez a partir de [`references/profile.template.md`](references/profile.template.md). Com o Chrome aberto e o LinkedIn logado, cole no Claude Code:
 
-- **Quem é / Stack**: experiência, empresas, tecnologias. A skill não cita na mensagem nada que não esteja aqui.
-- **Condições**: regime (PJ/CLT/contractor) e modelo (remoto/híbrido). O que for eliminatório zera a nota.
-- **Pontuação**: pesos de cada critério.
-- **Ângulos de pitch**: qual destaque usar para cada tipo de vaga.
+```text
+Configure meu perfil da skill linkedin-job-outreach. Leia meu perfil do LinkedIn
+no Chrome (só leitura) e me pergunte o que faltar: regime de contratação que aceito,
+modelo de trabalho, localização, prioridades, idiomas, termos de busca e limite diário.
+Me mostre o perfil completo antes de salvar.
+```
 
-Também vale revisar:
+Prefere não deixar o Claude ler seu LinkedIn? Troque a segunda frase por "Me faça as perguntas no chat". Para ajustar depois, edite o arquivo direto ou peça "atualiza meu perfil de busca: agora aceito híbrido em São Paulo".
 
-- `references/messages.md` — tom, tamanho e exemplos de mensagem.
-- `references/red-flags.md` — padrões de golpe que descartam a vaga.
-- Termos de busca padrão e limite diário em `SKILL.md` (seção "Busca autônoma no Chrome" e "Regras inegociáveis").
+O que cada seção do perfil controla:
+
+- **Quem é / Stack**: experiência e tecnologias. A skill não cita na mensagem nada que não esteja aqui.
+- **Condições**: regime, modelo, localização. O que for eliminatório zera a nota.
+- **Busca**: termos padrão e limite diário de abordagens.
+- **Pontuação** e **Ângulos de pitch**: pesos da nota e o destaque para cada tipo de vaga.
 
 ## Como usar
 
@@ -84,7 +114,8 @@ Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 
 | Pedido | O que acontece |
 |---|---|
-| `busca vagas` | Busca com os termos padrão, priorizando posts de conexões de 1º grau, e devolve a lista para aprovação |
+| `configura meu perfil` | Configuração guiada do perfil (também roda sozinha no primeiro uso) |
+| `busca vagas` | Busca com os termos do seu perfil, priorizando posts de conexões de 1º grau, e devolve a lista para aprovação |
 | `busca vagas de "senior react remote"` | Mesma coisa com os termos que você passar |
 | `analisa esta vaga: <url ou texto do post>` | Triagem e mensagem para um post específico |
 | `processa meus alertas de vaga do Gmail` | Lê os alertas dos últimos 3 dias e faz a triagem |
@@ -94,7 +125,7 @@ Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 
 ### Tracker (também dá para usar direto)
 
-O banco fica em `~/.linkedin-job-outreach/tracker.db` (criado na primeira execução; mude com a variável `JOB_OUTREACH_DB`).
+O banco fica em `~/.linkedin-job-outreach/tracker.db` (criado na primeira execução; mude com a variável `JOB_OUTREACH_DB`). Os comandos abaixo são para a instalação por `git clone`, rodando dentro da pasta da skill.
 
 ```bash
 python scripts/tracker.py check --name "Fulana" --company "Empresa"   # já contatei?
@@ -102,21 +133,27 @@ python scripts/tracker.py today                                       # quantos 
 python scripts/tracker.py list --status sent --older-than 7           # sem resposta há 7+ dias
 python scripts/tracker.py update --id 3 --status interview            # replied|interview|rejected|ghosted
 python scripts/tracker.py stats                                       # funil
+python scripts/tracker.py profile                                     # caminho e status do seu perfil
 ```
 
 ## Segurança e limites
 
 - **Nada é enviado sem sua aprovação**, mensagem por mensagem, no chat. Antes de digitar, a skill lê o histórico da conversa e não duplica contato feito à mão.
-- **Risco de conta**: os termos do LinkedIn proíbem automação. A skill usa o seu navegador real, em ritmo lento, com teto de 10 abordagens/dia, e para imediatamente diante de CAPTCHA, aviso de atividade incomum ou tela de login. Isso reduz o risco, mas não elimina — use por sua conta.
+- **Risco de conta**: os termos do LinkedIn proíbem automação. A skill usa o seu navegador real, em ritmo lento, com teto diário de abordagens (padrão 10), e para imediatamente diante de CAPTCHA, aviso de atividade incomum ou tela de login. Isso reduz o risco, mas não elimina — use por sua conta.
 - **DM só para conexões de 1º grau** (sem Premium). Para os demais, o caminho é convite com nota de até 200 caracteres, e contas gratuitas têm um número limitado de notas por mês; quando acabam, a skill fecha o modal sem enviar e sugere alternativas.
 - Posts que pedem para clonar repositório/rodar código antes de uma conversa real, cobram taxa ou pedem documentos são descartados como golpe (ver `references/red-flags.md`).
 
 ## Estrutura
 
 ```
-SKILL.md                 # fluxo e regras que o Claude segue
-references/profile.md    # seu perfil e critérios de nota (edite!)
-references/messages.md   # regras e exemplos de mensagem
-references/red-flags.md  # padrões de golpe
-scripts/tracker.py       # CLI do tracker (SQLite, sem dependências)
+SKILL.md                          # fluxo e regras que o Claude segue
+references/profile.template.md    # modelo do perfil (o seu fica em ~/.linkedin-job-outreach/)
+references/messages.md            # regras e exemplos de mensagem
+references/red-flags.md           # padrões de golpe
+scripts/tracker.py                # CLI do tracker e do perfil (SQLite, sem dependências)
+.claude-plugin/                   # manifestos do plugin e do marketplace
 ```
+
+## Licença
+
+[MIT](LICENSE)

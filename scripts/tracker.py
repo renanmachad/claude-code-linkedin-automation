@@ -2,6 +2,7 @@
 """Tracker de contatos com recrutadores (SQLite, sem dependências externas)."""
 import argparse
 import os
+import shutil
 import sqlite3
 import sys
 from datetime import datetime, timedelta
@@ -10,6 +11,14 @@ DB_PATH = os.environ.get(
     "JOB_OUTREACH_DB",
     os.path.join(os.path.expanduser("~"), ".linkedin-job-outreach", "tracker.db"),
 )
+PROFILE_PATH = os.environ.get(
+    "JOB_OUTREACH_PROFILE",
+    os.path.join(os.path.expanduser("~"), ".linkedin-job-outreach", "profile.md"),
+)
+TEMPLATE_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "references", "profile.template.md"
+)
+TEMPLATE_MARKER = "<!-- TEMPLATE"
 STATUSES = ("sent", "replied", "interview", "rejected", "ghosted")
 
 
@@ -141,6 +150,18 @@ def cmd_today(a, con):
     print(f"Enviados hoje: {n}/{a.limit} (restam {max(a.limit - n, 0)})")
 
 
+def cmd_profile(a, con):
+    # Perfil fica fora da pasta da skill para sobreviver a atualizações do plugin
+    if not os.path.exists(PROFILE_PATH):
+        os.makedirs(os.path.dirname(PROFILE_PATH), exist_ok=True)
+        shutil.copyfile(TEMPLATE_PATH, PROFILE_PATH)
+        print(f"CRIADO: {PROFILE_PATH}")
+        return
+    with open(PROFILE_PATH, encoding="utf-8") as f:
+        status = "INCOMPLETO" if TEMPLATE_MARKER in f.read() else "OK"
+    print(f"{status}: {PROFILE_PATH}")
+
+
 def main():
     # Windows usa cp1252 no stdout redirecionado; "≤" e nomes acentuados quebrariam o print
     sys.stdout.reconfigure(encoding="utf-8")
@@ -176,6 +197,8 @@ def main():
     s = sub.add_parser("today")
     s.add_argument("--limit", type=int, default=10)
 
+    sub.add_parser("profile")
+
     a = p.parse_args()
     con = connect()
     {
@@ -185,6 +208,7 @@ def main():
         "update": cmd_update,
         "stats": cmd_stats,
         "today": cmd_today,
+        "profile": cmd_profile,
     }[a.cmd](a, con)
 
 

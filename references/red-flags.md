@@ -14,7 +14,7 @@
 - Post sem empresa nomeada ("empresa confidencial", "cliente de grande porte") — comum em consultorias; ok, mas sinalizar.
 - Recrutador sem foto ou com perfil muito recente.
 - Descrição genérica copiada que não bate com o título.
-- "PJ" com exigências típicas de CLT (horário fixo, exclusividade, subordinação) — sinalizar para o Renan avaliar.
+- "PJ" com exigências típicas de CLT (horário fixo, exclusividade, subordinação) — sinalizar para o usuário avaliar.
 
 ## Se identificar red flag grave em contato já feito
 
