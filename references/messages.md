@@ -5,6 +5,7 @@
 - Curta: DM até ~500 caracteres; nota de convite até **200 caracteres** (limite do LinkedIn — conte e informe o total).
 - Cite algo **específico do post** (stack, produto, domínio). Mensagem genérica é o principal motivo de não ter resposta.
 - Uma linha de proposta de valor com o ângulo certo do perfil do usuário e, se houver, um gancho concreto da memória do CV (número, escala, resultado) — não liste a stack inteira.
+- Números exatos do perfil/CV: não misture anos de experiência total com anos em um domínio ou empresa ("5+ anos de experiência, com passagem por bancos" ≠ "5+ anos em bancos").
 - Deixe claras as condições do perfil que importam (ex.: remoto, PJ/contractor — em inglês: "as a contractor").
 - Termine com pergunta simples e fácil de responder.
 - Sem CV anexado na primeira mensagem; ofereça enviar.
