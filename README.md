@@ -25,7 +25,27 @@ Claude: [envia, confere na tela, registra no tracker]
 
 ## Instalação
 
-A skill precisa ficar em uma pasta de skills do Claude Code. Escolha uma opção:
+### Como plugin (recomendado)
+
+Este repositório também é um marketplace de plugins do Claude Code. No terminal:
+
+```bash
+claude plugin marketplace add renanmachad/claude-code-linkedin-automation
+```
+
+```bash
+claude plugin install linkedin-job-outreach@renanmachad-plugins
+```
+
+Ou, dentro de uma sessão do Claude Code: `/plugin marketplace add renanmachad/claude-code-linkedin-automation` e depois `/plugin install linkedin-job-outreach@renanmachad-plugins`.
+
+Para receber atualizações: `claude plugin marketplace update renanmachad-plugins`. Para remover: `claude plugin marketplace remove renanmachad-plugins`.
+
+> Instalado como plugin, os arquivos ficam em `~/.claude/plugins/cache/` e são substituídos a cada atualização. Para personalizar o `references/profile.md` (próxima seção) sem perder a edição, prefira a instalação manual abaixo.
+
+### Manual (clonando a pasta)
+
+A skill também funciona clonada direto em uma pasta de skills do Claude Code:
 
 **Para todos os seus projetos** (pasta pessoal):
 

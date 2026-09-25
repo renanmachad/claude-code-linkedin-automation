@@ -14,6 +14,10 @@ A Claude skill (`linkedin-job-outreach`), not an application. `SKILL.md` is the 
 - `references/messages.md` — message rules (DM ~500 chars, invite note ≤ 200 chars, language matches the post) plus examples and follow-up guidance.
 - `scripts/tracker.py` — stdlib-only SQLite CLI tracking recruiter contacts. DB defaults to `~/.linkedin-job-outreach/tracker.db`; override with env var `JOB_OUTREACH_DB` (use this for testing so the real DB isn't touched).
 
+- `.claude-plugin/plugin.json` + `.claude-plugin/marketplace.json` — the repo is both a plugin (root `SKILL.md` loads as a single skill) and a marketplace (`renanmachad-plugins`, plugin `source: "./"`). Bump `version` in `plugin.json` on every release, otherwise installed users stay on the old version. Validate with `claude plugin validate .`.
+
+In `SKILL.md`, always reference bundled files as `${CLAUDE_SKILL_DIR}/...` (e.g. `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py"`): the skill runs from the user's project directory, so bare relative paths break once installed.
+
 If you rename a tracker subcommand, flag, `--channel` choice (`dm|comment|invite|email`) or status (`sent|replied|interview|rejected|ghosted`), update the invocations in `SKILL.md` to match.
 
 ## Tracker commands

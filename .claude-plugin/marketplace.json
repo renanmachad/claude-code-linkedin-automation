@@ -1,0 +1,14 @@
+{
+  "name": "renanmachad-plugins",
+  "description": "Plugins do Claude Code de Renan Machado Pinho",
+  "owner": {
+    "name": "Renan Machado Pinho"
+  },
+  "plugins": [
+    {
+      "name": "linkedin-job-outreach",
+      "source": "./",
+      "description": "Busca vagas no LinkedIn, faz triagem e envia mensagens a recrutadores com sua aprovação."
+    }
+  ]
+}
