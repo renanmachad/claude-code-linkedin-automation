@@ -51,18 +51,29 @@ Se não estiver logado, peça para o usuário fazer login — nunca digite crede
    - Nenhum dos dois, ou o post pede para comentar → **comentário no post**
 6. **Gerar mensagem** seguindo `${CLAUDE_SKILL_DIR}/references/messages.md`, no idioma do post e no limite do canal.
 7. **Pedir aprovação**: apresente a lista (formato abaixo) e espere o usuário responder quais IDs enviar.
-8. **Enviar os aprovados**, um por vez:
+8. **Enviar os aprovados**, um por vez, em sequência e sem novas perguntas enquanto tudo sair como previsto (só pare e pergunte diante de desvio: histórico inesperado, canal diferente, erro). Relate tudo junto no fim:
    - `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" today` — se o limite foi atingido, pare e avise quais ficaram pendentes.
    - Abra o perfil/post, use o canal escolhido, cole o texto aprovado sem alterações.
      - Ao abrir a conversa, leia o histórico antes de digitar: se o usuário já escreveu para essa pessoa sobre a vaga (contato feito à mão), não envie — registre no tracker com `--notes "enviado manualmente"` e informe.
      - Se o LinkedIn disser que acabaram as notas de convite gratuitas (ou pedir Premium/InMail), feche o modal sem enviar e ofereça alternativas (convite sem nota, comentário no post, candidatura pelo link) — cada uma precisa de nova aprovação.
-     - DM: "Mensagem" → clique no placeholder "Escreva uma mensagem…" para focar (o primeiro `type` sem foco se perde) → digite → confira com zoom que o texto está completo → "Enviar".
+     - DM: use o **Procedimento de DM** (abaixo).
      - Convite: "Conectar" → no modal "Adicionar nota ao convite?", clique **"Adicionar nota"** (nunca "Enviar sem nota") → digite a mensagem da vaga aprovada (≤ 200 caracteres: gancho da vaga + ângulo + condição + pergunta) → "Enviar". O convite para quem não é conexão sempre leva a mensagem sobre a vaga como nota.
      - Comentário: caixa de comentário do post → digite → "Publicar".
    - Confirme na tela que foi enviado (mensagem aparece na conversa / convite "Pendente" / comentário publicado). Se algo divergir do esperado (canal mudou, InMail pedido, erro), não improvise: pule e informe.
    - Registre: `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" add --name ... --company ... --role ... --url ... --channel dm|invite|comment --score ...`
    - `wait` de alguns segundos antes do próximo.
 9. **Relatório final**: enviados (com canal), pendentes/pulados (com motivo) e `tracker.py today`.
+
+## Procedimento de DM
+
+A janela de conversa do LinkedIn não aparece na árvore de acessibilidade (`find`/`read_page` não enxergam a caixa de texto nem o "Enviar"): use screenshots e coordenadas, em lotes com `browser_batch`. Quatro rodadas por destinatário:
+
+1. **Perfil**: `navigate` para o perfil → `wait` 4 s → screenshot (escala 0.6). Confirme nome e grau (1º) e localize "Mensagem".
+2. **Abrir e ler**: clique em "Mensagem" → `wait` 4 s → screenshot (escala 1). Leia o histórico: se já há mensagens do usuário sobre a vaga, não envie (contato manual) e siga para o próximo. Se houver outra janela de conversa aberta, feche-a (X) antes de continuar.
+3. **Digitar e conferir**: clique **em cima do texto** "Escreva uma mensagem…"/"Write a message…" (não no centro da caixa) → `wait` 1 s → `type` com o texto aprovado → `wait` 1 s → `zoom` na caixa. Se a caixa estiver vazia, clique de novo no placeholder e redigite uma vez; se falhar de novo, pule e informe.
+4. **Enviar e confirmar**: com o texto idêntico ao aprovado, clique em "Enviar" → `wait` 3 s → screenshot (escala 0.6) mostrando a mensagem na conversa → feche a janela (X) → registre no tracker → `wait` alguns segundos → próximo destinatário.
+
+Coordenadas mudam com o tamanho da janela e com o layout (janela flutuante sobre o perfil ou página inteira `messaging/thread/new`): sempre use as do screenshot mais recente, nunca reaproveite de outro destinatário.
 
 ## Formato da lista para aprovação
 
