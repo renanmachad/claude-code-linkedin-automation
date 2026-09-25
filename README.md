@@ -70,11 +70,11 @@ claude plugin marketplace update renanmachad-plugins
 claude plugin marketplace remove renanmachad-plugins
 ```
 
-Seu perfil, seu CV e o histórico de contatos ficam em `~/.linkedin-job-outreach/`, fora da pasta do plugin: atualizar ou remover o plugin não apaga nada disso.
+Seu perfil, seu CV, seus dados de candidatura e o histórico de contatos ficam em `~/.linkedin-job-outreach/`, fora da pasta do plugin: atualizar ou remover o plugin não apaga nada disso.
 
 ### Alternativa — clonar como skill avulsa
 
-Útil para quem quer editar a skill em si (regras, mensagens, red flags). Nesse modo os comandos `/linkedin-job-outreach:follow-up` e `/linkedin-job-outreach:cv` não aparecem, mas pedir "faz follow-up das minhas DMs" ou "lê meu CV em <caminho>" funciona do mesmo jeito.
+Útil para quem quer editar a skill em si (regras, mensagens, red flags). Nesse modo os comandos com barra (`follow-up`, `cv`, `candidatura`) não aparecem, mas pedir "faz follow-up das minhas DMs", "lê meu CV em <caminho>" ou "me candidata nessa vaga: <link>" funciona do mesmo jeito.
 
 ```bash
 git clone https://github.com/renanmachad/claude-code-linkedin-automation.git ~/.claude/skills/linkedin-job-outreach
@@ -111,6 +111,16 @@ Com o CV, as mensagens citam experiências e resultados concretos em vez de só 
 
 Aceita PDF, DOCX, MD e TXT. O arquivo é copiado para `~/.linkedin-job-outreach/cv/` e lido; os fatos vão para `~/.linkedin-job-outreach/cv/memoria.md`, que a busca, as abordagens e o follow-up passam a usar. Mudou o currículo? Rode o comando de novo com o novo caminho, ou sem caminho para reler o mesmo arquivo — a memória é reescrita a cada execução e o Claude mostra o que mudou e sugere ajustes no perfil.
 
+### Dados para candidaturas (opcional)
+
+Para a skill preencher formulários de vaga (Greenhouse, Lever, Workday, Gupy, Easy Apply…), ela precisa de alguns dados que não estão no perfil nem no CV: telefone, pretensão salarial, disponibilidade, autorização de trabalho. Eles ficam em `~/.linkedin-job-outreach/candidatura.md` e são pedidos no chat na primeira candidatura — ou cole antes:
+
+```text
+Configure meus dados de candidatura da skill linkedin-job-outreach.
+```
+
+CPF, RG, dados bancários e senhas nunca vão para esse arquivo: quando um formulário pede, a skill pausa e você digita.
+
 O que cada seção do perfil controla:
 
 - **Quem é / Stack**: experiência e tecnologias. A skill não cita na mensagem nada que não esteja aqui.
@@ -124,6 +134,7 @@ Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 
 | Pedido | O que acontece |
 |---|---|
+| `/linkedin-job-outreach:candidatura <link>` ou `me candidata nessa vaga: <link>` | Abre o link, mapeia o formulário e mostra o plano campo a campo; preenche depois do seu ok e só envia depois da revisão final |
 | `/linkedin-job-outreach:cv <caminho>` ou `lê meu CV` | Importa/relê o CV e atualiza a memória usada nas mensagens |
 | `configura meu perfil` | Configuração guiada do perfil (também roda sozinha no primeiro uso) |
 | `busca vagas` | Busca com os termos do seu perfil, priorizando posts de conexões de 1º grau, e devolve a lista para aprovação |
@@ -145,6 +156,7 @@ python scripts/tracker.py list --status sent --older-than 7           # sem resp
 python scripts/tracker.py update --id 3 --status interview            # replied|interview|rejected|ghosted
 python scripts/tracker.py stats                                       # funil
 python scripts/tracker.py profile                                     # caminho e status do seu perfil
+python scripts/tracker.py candidatura                                 # caminho e status dos dados de candidatura
 python scripts/tracker.py cv --import curriculo.pdf                   # copia o CV (sem --import: mostra o CV atual)
 ```
 
@@ -153,6 +165,7 @@ python scripts/tracker.py cv --import curriculo.pdf                   # copia o 
 - **Nada é enviado sem sua aprovação**, mensagem por mensagem, no chat. Antes de digitar, a skill lê o histórico da conversa e não duplica contato feito à mão.
 - **Risco de conta**: os termos do LinkedIn proíbem automação. A skill usa o seu navegador real, em ritmo lento, com teto diário de abordagens (padrão 10), e para imediatamente diante de CAPTCHA, aviso de atividade incomum ou tela de login. Isso reduz o risco, mas não elimina — use por sua conta.
 - **DM só para conexões de 1º grau** (sem Premium). Para os demais, o caminho é convite com nota de até 200 caracteres, e contas gratuitas têm um número limitado de notas por mês; quando acabam, a skill fecha o modal sem enviar e sugere alternativas.
+- **Candidaturas**: só em links que você passou ou aprovou no chat, com duas aprovações (antes de preencher e antes de enviar). Criar conta, login, senhas, códigos de verificação, CAPTCHA e números de documento ficam com você.
 - Posts que pedem para clonar repositório/rodar código antes de uma conversa real, cobram taxa ou pedem documentos são descartados como golpe (ver `references/red-flags.md`).
 
 ## Estrutura
@@ -161,6 +174,8 @@ python scripts/tracker.py cv --import curriculo.pdf                   # copia o 
 SKILL.md                          # fluxo e regras que o Claude segue
 skills/follow-up/SKILL.md         # comando de follow-up das DMs
 skills/cv/SKILL.md                # comando de importar/ler o CV e gerar a memória
+skills/candidatura/SKILL.md       # comando de preencher formulários de candidatura
+references/candidatura.template.md  # modelo dos dados de formulário (os seus ficam em ~/.linkedin-job-outreach/)
 references/profile.template.md    # modelo do perfil (o seu fica em ~/.linkedin-job-outreach/)
 references/messages.md            # regras e exemplos de mensagem
 references/red-flags.md           # padrões de golpe

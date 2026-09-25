@@ -28,7 +28,7 @@ Dias sem resposta para considerar a conversa parada: o número passado em `$ARGU
 4. **Ler cada conversa** (uma por vez, com `wait` de alguns segundos entre elas): abra a conversa e leia o histórico inteiro, com datas e quem enviou cada mensagem.
 5. **Classificar** cada conversa em uma destas categorias:
    - **Não é sobre vaga**: networking, pessoal, venda de serviço, spam → ignore (só conte no resumo).
-   - **Aguardando você**: a última mensagem é do recrutador (pergunta, pedido de CV, proposta de horário). Não é follow-up — é resposta pendente. Rascunhe uma resposta só se der para responder sem inventar fatos; senão, liste o que o recrutador pediu.
+   - **Aguardando você**: a última mensagem é do recrutador (pergunta, pedido de CV, proposta de horário). Não é follow-up — é resposta pendente. Rascunhe uma resposta só se der para responder sem inventar fatos; senão, liste o que o recrutador pediu. Se o pedido for se cadastrar/candidatar por um link, mostre o link e o domínio e ofereça o fluxo de candidatura (`${CLAUDE_SKILL_DIR}/../candidatura/SKILL.md`) — só começa se o usuário aprovar aquele link.
    - **Parada — cabe follow-up**: a última mensagem é do usuário, sobre a vaga, há ≥ N dias, e **não há follow-up anterior**.
    - **Já teve follow-up sem resposta**: depois da última resposta do recrutador (ou desde o início, se ele nunca respondeu), o usuário escreveu em **dois dias diferentes** sem retorno. Não envie outra; sugira marcar como `ghosted`.
 

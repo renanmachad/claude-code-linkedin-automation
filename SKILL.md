@@ -73,6 +73,7 @@ Ordene por nota, maior primeiro, numerando cada vaga:
 Recrutador: <nome> (<link do perfil>) · Post: <link> · <há quanto tempo>
 Fit: <1–2 frases: o que casa e o que falta>
 Canal: DM | convite com nota | comentário
+Candidatura por link: <link, se o post pedir para se candidatar por link — senão omita>
 Mensagem (<N> caracteres):
 <texto exato que será enviado>
 ```
@@ -83,6 +84,7 @@ Não invente dados: se o post não tem nome do recrutador, escreva "não identif
 
 ## Follow-up e status
 
+- Para se candidatar por link (formulários em Greenhouse, Lever, Workday, Gupy, Easy Apply etc.), siga `${CLAUDE_SKILL_DIR}/skills/candidatura/SKILL.md` (também `/linkedin-job-outreach:candidatura <link>`). Quando um post pedir candidatura por link, mostre o link na lista; a candidatura só começa se o usuário aprovar aquele link explicitamente (ex.: "candidata na 2").
 - Para importar ou reler o CV, siga `${CLAUDE_SKILL_DIR}/skills/cv/SKILL.md` (também `/linkedin-job-outreach:cv <caminho>`).
 - Para follow-up, siga `${CLAUDE_SKILL_DIR}/skills/follow-up/SKILL.md` (também disponível como `/linkedin-job-outreach:follow-up`): ele percorre as DMs, separa as conversas sobre vaga e escreve o follow-up no idioma e tom de cada conversa. Follow-up também precisa de aprovação antes do envio e conta no limite diário.
 - `python "${CLAUDE_SKILL_DIR}/scripts/tracker.py" list --status sent --older-than 7` lista, só pelo tracker, quem não respondeu em 7+ dias.

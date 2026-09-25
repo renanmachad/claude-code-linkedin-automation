@@ -16,9 +16,13 @@ PROFILE_PATH = os.environ.get(
     "JOB_OUTREACH_PROFILE",
     os.path.join(os.path.expanduser("~"), ".linkedin-job-outreach", "profile.md"),
 )
-TEMPLATE_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "references", "profile.template.md"
+REFERENCES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "references")
+TEMPLATE_PATH = os.path.join(REFERENCES_DIR, "profile.template.md")
+APPLICATION_PATH = os.environ.get(
+    "JOB_OUTREACH_APPLICATION",
+    os.path.join(os.path.expanduser("~"), ".linkedin-job-outreach", "candidatura.md"),
 )
+APPLICATION_TEMPLATE = os.path.join(REFERENCES_DIR, "candidatura.template.md")
 TEMPLATE_MARKER = "<!-- TEMPLATE"
 CV_DIR = os.environ.get(
     "JOB_OUTREACH_CV_DIR",
@@ -157,16 +161,24 @@ def cmd_today(a, con):
     print(f"Enviados hoje: {n}/{a.limit} (restam {max(a.limit - n, 0)})")
 
 
-def cmd_profile(a, con):
-    # Perfil fica fora da pasta da skill para sobreviver a atualizações do plugin
-    if not os.path.exists(PROFILE_PATH):
-        os.makedirs(os.path.dirname(PROFILE_PATH), exist_ok=True)
-        shutil.copyfile(TEMPLATE_PATH, PROFILE_PATH)
-        print(f"CRIADO: {PROFILE_PATH}")
+def ensure_from_template(path, template):
+    # Arquivos pessoais ficam fora da pasta da skill para sobreviver a atualizações do plugin
+    if not os.path.exists(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        shutil.copyfile(template, path)
+        print(f"CRIADO: {path}")
         return
-    with open(PROFILE_PATH, encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         status = "INCOMPLETO" if TEMPLATE_MARKER in f.read() else "OK"
-    print(f"{status}: {PROFILE_PATH}")
+    print(f"{status}: {path}")
+
+
+def cmd_profile(a, con):
+    ensure_from_template(PROFILE_PATH, TEMPLATE_PATH)
+
+
+def cmd_application(a, con):
+    ensure_from_template(APPLICATION_PATH, APPLICATION_TEMPLATE)
 
 
 def stored_cv():
@@ -246,7 +258,7 @@ def main():
     s.add_argument("--company")
     s.add_argument("--role")
     s.add_argument("--url")
-    s.add_argument("--channel", choices=["dm", "comment", "invite", "email"])
+    s.add_argument("--channel", choices=["dm", "comment", "invite", "email", "form"])
     s.add_argument("--score", type=int)
     s.add_argument("--notes")
 
@@ -271,6 +283,7 @@ def main():
     s.add_argument("--limit", type=int, default=10)
 
     sub.add_parser("profile")
+    sub.add_parser("candidatura")
 
     s = sub.add_parser("cv")
     s.add_argument("--import", dest="import_path", help="copia este arquivo como o CV atual")
@@ -286,6 +299,7 @@ def main():
         "stats": cmd_stats,
         "today": cmd_today,
         "profile": cmd_profile,
+        "candidatura": cmd_application,
         "cv": cmd_cv,
     }[a.cmd](a, con)
 
