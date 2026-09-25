@@ -1,6 +1,6 @@
 # LinkedIn Job Outreach — skill para Claude Code
 
-Skill que busca posts de vaga no LinkedIn pelo seu próprio Chrome, faz a triagem (red flags, nota de fit 0–10), escreve a mensagem para o recrutador e **só envia as que você aprovar**, registrando cada contato em um banco SQLite local para evitar duplicatas e lembrar de follow-ups.
+Plugin para Claude Code que busca posts de vaga no LinkedIn pelo seu próprio Chrome, faz a triagem (red flags, nota de fit 0–10), escreve a mensagem para o recrutador usando seu perfil e seu CV, preenche formulários de candidatura e faz follow-up das conversas paradas — **enviando só o que você aprovar**. Cada contato fica registrado em um banco SQLite local para evitar duplicatas.
 
 ```
 você: busca vagas
@@ -8,9 +8,11 @@ Claude: [busca no LinkedIn → lê posts → checa histórico → dá nota → e
         ### [1] 9/10 — Full Stack Sênior @ Empresa X
         Recrutador: Fulana (1º grau) · Canal: DM
         Mensagem (341 caracteres): Oi, Fulana! Vi seu post...
-        Quais envio?
-você: manda 1 e 3
-Claude: [envia, confere na tela, registra no tracker]
+        ### [2] 8/10 — Backend Engineer @ Empresa Y
+        Candidatura por link: jobs.lever.co/... · plano: 9 campos, anexar cv.pdf
+        Quais envio e em quais me candidato?
+você: manda 1, candidata 2
+Claude: [envia a DM, preenche e envia o formulário, confere na tela, registra no tracker]
 ```
 
 ## Requisitos
@@ -33,7 +35,7 @@ Abra o Claude Code (terminal, app desktop ou IDE) e cole:
 Instale o plugin linkedin-job-outreach para mim:
 1. Rode `claude plugin marketplace add renanmachad/claude-code-linkedin-automation`.
 2. Rode `claude plugin install linkedin-job-outreach@renanmachad-plugins`.
-3. Confirme com `claude plugin details linkedin-job-outreach` que aparece "Skills (1) linkedin-job-outreach".
+3. Confirme com `claude plugin details linkedin-job-outreach` que aparecem 4 skills: candidatura, cv, follow-up e linkedin-job-outreach.
 4. Verifique se `python --version` retorna Python 3.8 ou superior; se não, me diga como instalar no meu sistema.
 Se o comando `claude` não estiver no PATH, pare e me diga para digitar eu mesmo
 `/plugin marketplace add renanmachad/claude-code-linkedin-automation` e
@@ -101,6 +103,13 @@ Me mostre o perfil completo antes de salvar.
 
 Prefere não deixar o Claude ler seu LinkedIn? Troque a segunda frase por "Me faça as perguntas no chat". Para ajustar depois, edite o arquivo direto ou peça "atualiza meu perfil de busca: agora aceito híbrido em São Paulo".
 
+O que cada seção do perfil controla:
+
+- **Quem é / Stack**: experiência e tecnologias. A skill não cita na mensagem nada que não esteja no perfil ou na memória do CV.
+- **Condições**: regime, modelo, localização. O que for eliminatório zera a nota.
+- **Busca**: termos padrão e limite diário de abordagens.
+- **Pontuação** e **Ângulos de pitch**: pesos da nota e o destaque para cada tipo de vaga.
+
 ### Importe seu CV (opcional, recomendado)
 
 Com o CV, as mensagens citam experiências e resultados concretos em vez de só a lista de tecnologias. Cole no Claude Code, trocando o caminho:
@@ -121,27 +130,20 @@ Configure meus dados de candidatura da skill linkedin-job-outreach.
 
 CPF, RG, dados bancários e senhas nunca vão para esse arquivo: quando um formulário pede, a skill pausa e você digita.
 
-O que cada seção do perfil controla:
-
-- **Quem é / Stack**: experiência e tecnologias. A skill não cita na mensagem nada que não esteja aqui.
-- **Condições**: regime, modelo, localização. O que for eliminatório zera a nota.
-- **Busca**: termos padrão e limite diário de abordagens.
-- **Pontuação** e **Ângulos de pitch**: pesos da nota e o destaque para cada tipo de vaga.
-
 ## Como usar
 
 Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 
 | Pedido | O que acontece |
 |---|---|
-| `/linkedin-job-outreach:candidatura <link>` ou `me candidata nessa vaga: <link>` | Abre o link, mapeia o formulário e mostra o plano campo a campo; com seu "candidata", preenche e envia. Se algo fugir do plano, para antes de enviar |
-| `/linkedin-job-outreach:cv <caminho>` ou `lê meu CV` | Importa/relê o CV e atualiza a memória usada nas mensagens |
-| `configura meu perfil` | Configuração guiada do perfil (também roda sozinha no primeiro uso) |
-| `busca vagas` | Busca com os termos do seu perfil, priorizando posts de conexões de 1º grau, e devolve a lista para aprovação |
+| `busca vagas` | Busca com os termos do seu perfil, priorizando posts de conexões de 1º grau, e devolve a lista com mensagens e, para vagas com link de candidatura, o plano de preenchimento |
 | `busca vagas de "senior react remote"` | Mesma coisa com os termos que você passar |
 | `analisa esta vaga: <url ou texto do post>` | Triagem e mensagem para um post específico |
 | `processa meus alertas de vaga do Gmail` | Lê os alertas dos últimos 3 dias e faz a triagem |
-| `manda 1, 3 e 4` | Envia só as mensagens aprovadas e registra no tracker |
+| `manda 1 e 3, candidata 2` / `tudo` | Envia as mensagens e as candidaturas aprovadas daquela lista e registra no tracker |
+| `/linkedin-job-outreach:candidatura <link>` ou `me candidata nessa vaga: <link>` | Abre o link, mapeia o formulário e mostra o plano campo a campo; com seu "candidata", preenche e envia. Se algo fugir do plano, para antes de enviar |
+| `/linkedin-job-outreach:cv <caminho>` ou `lê meu CV` | Importa/relê o CV e atualiza a memória usada nas mensagens |
+| `configura meu perfil` | Configuração guiada do perfil (também roda sozinha no primeiro uso) |
 | `/linkedin-job-outreach:follow-up` ou `faz follow-up das minhas DMs` | Percorre suas DMs, separa as conversas sobre vaga, identifica as paradas há 7+ dias e escreve um follow-up no idioma e tom de cada conversa; também aponta quem está esperando resposta sua. Aceita outro prazo: `/linkedin-job-outreach:follow-up 10` |
 | `a Fulana respondeu` / `tenho entrevista com a Empresa X` | Atualiza o status no tracker |
 
@@ -162,7 +164,7 @@ python scripts/tracker.py cv --import curriculo.pdf                   # copia o 
 
 ## Segurança e limites
 
-- **Nada é enviado sem sua aprovação**, mensagem por mensagem, no chat. Antes de digitar, a skill lê o histórico da conversa e não duplica contato feito à mão.
+- **Nada é enviado sem sua aprovação** no chat — cada mensagem, follow-up e candidatura aparece na lista antes, e você escolhe quais vão. Antes de digitar, a skill lê o histórico da conversa e não duplica contato feito à mão.
 - **Risco de conta**: os termos do LinkedIn proíbem automação. A skill usa o seu navegador real, em ritmo lento, com teto diário de abordagens (padrão 10), e para imediatamente diante de CAPTCHA, aviso de atividade incomum ou tela de login. Isso reduz o risco, mas não elimina — use por sua conta.
 - **DM só para conexões de 1º grau** (sem Premium). Para os demais, o caminho é convite com nota de até 200 caracteres, e contas gratuitas têm um número limitado de notas por mês; quando acabam, a skill fecha o modal sem enviar e sugere alternativas.
 - **Candidaturas**: só em links que você passou ou aprovou no chat, com uma aprovação por candidatura depois de ver o plano completo (várias podem ser aprovadas numa resposta). A busca já traz os planos das vagas com link de candidatura. Criar conta, login, senhas, códigos de verificação, CAPTCHA e números de documento ficam com você.
@@ -179,7 +181,7 @@ references/candidatura.template.md  # modelo dos dados de formulário (os seus f
 references/profile.template.md    # modelo do perfil (o seu fica em ~/.linkedin-job-outreach/)
 references/messages.md            # regras e exemplos de mensagem
 references/red-flags.md           # padrões de golpe
-scripts/tracker.py                # CLI do tracker e do perfil (SQLite, sem dependências)
+scripts/tracker.py                # CLI do tracker, perfil, CV e dados de candidatura (SQLite, sem dependências)
 .claude-plugin/                   # manifestos do plugin e do marketplace
 ```
 
