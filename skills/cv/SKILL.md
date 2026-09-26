@@ -8,7 +8,7 @@ argument-hint: "[caminho do CV — vazio para reler o CV já importado]"
 
 Copia o CV para a pasta de dados da skill, lê o conteúdo e (re)escreve um arquivo de memória em Markdown com os fatos que as mensagens podem usar. Cada execução reescreve a memória a partir do CV atual.
 
-Tracker: `python "${CLAUDE_SKILL_DIR}/../../scripts/tracker.py"` (use `python3` ou `python` conforme a seção "Interpretador Python" da skill principal)
+Tracker: `python "${CLAUDE_SKILL_DIR}/../../scripts/tracker.py"` — na primeira chamada da sessão rode `python3 --version`: se funcionar, use `python3` no lugar de `python`; se falhar (não encontrado ou aviso da Microsoft Store), use `python`
 
 O CV e a memória ficam em `~/.linkedin-job-outreach/cv/` (`cv.<ext>` e `memoria.md`), fora da pasta da skill: atualizações do plugin apagam aquela pasta, e dados pessoais não devem ir para um repositório.
 
