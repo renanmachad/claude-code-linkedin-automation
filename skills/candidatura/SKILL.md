@@ -9,7 +9,7 @@ argument-hint: "<link da vaga>"
 Preenche e envia formulários de vaga em sites externos com os dados do usuário. **Uma aprovação por candidatura**: o usuário vê o plano completo (campos, valores, anexos, caixas marcadas, respostas abertas) e responde "candidata"; isso autoriza preencher **e** enviar exatamente aquele plano. Várias candidaturas podem ser aprovadas numa mesma resposta ("candidata 2 e 4"), desde que cada plano tenha sido mostrado.
 
 Caminhos (esta skill fica em `skills/candidatura/` dentro da skill principal):
-- Tracker: `python "${CLAUDE_SKILL_DIR}/../../scripts/tracker.py"`
+- Tracker: `python "${CLAUDE_SKILL_DIR}/../../scripts/tracker.py"` (use `python3` ou `python` conforme a seção "Interpretador Python" da skill principal)
 - Regras gerais e de segurança: `${CLAUDE_SKILL_DIR}/../../SKILL.md`
 - Red flags: `${CLAUDE_SKILL_DIR}/../../references/red-flags.md`
 

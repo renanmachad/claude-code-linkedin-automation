@@ -24,7 +24,7 @@ If you rename a tracker subcommand, flag, `--channel` choice (`dm|comment|invite
 
 ## Tracker commands
 
-Use `python`, not `python3` — on this Windows machine `python3` resolves to the Microsoft Store stub.
+Skill files write `python`, and the root `SKILL.md` ("Interpretador Python") tells Claude to probe `python3 --version` once per session and use `python3` if it succeeds, else `python`: macOS/Linux often only have `python3`, while on Windows `python3` is a Microsoft Store stub that exits with code 49. When working in this repo on this Windows machine, use `python`.
 
 ```bash
 python scripts/tracker.py check --name "<recrutador>" --company "<empresa>" [--url ...] [--days 30]

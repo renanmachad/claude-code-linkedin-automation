@@ -1,7 +1,7 @@
 {
   "name": "linkedin-job-outreach",
   "displayName": "LinkedIn Job Outreach",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Busca vagas no LinkedIn pelo Claude in Chrome, faz triagem, escreve mensagens para recrutadores e envia só as que você aprovar.",
   "author": {
     "name": "Renan Machado Pinho",

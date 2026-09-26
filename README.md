@@ -18,7 +18,7 @@ Claude: [envia a DM, preenche e envia o formulário, confere na tela, registra n
 ## Requisitos
 
 - [Claude Code](https://claude.com/claude-code) (CLI, app desktop ou extensão de IDE)
-- Python 3.8+ no `PATH` (só biblioteca padrão; nada para instalar via pip)
+- Python 3.8+ no `PATH`, como `python3` (macOS/Linux) ou `python` (Windows) — a skill detecta qual existe. Só biblioteca padrão; nada para instalar via pip
 - Extensão [Claude in Chrome](https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn), logada na mesma conta do Claude Code
 - LinkedIn logado nesse Chrome
 - Opcional: conector do Gmail, para processar alertas de vaga (`jobalerts-noreply@linkedin.com`)
@@ -36,7 +36,7 @@ Instale o plugin linkedin-job-outreach para mim:
 1. Rode `claude plugin marketplace add renanmachad/claude-code-linkedin-automation`.
 2. Rode `claude plugin install linkedin-job-outreach@renanmachad-plugins`.
 3. Confirme com `claude plugin details linkedin-job-outreach` que aparecem 4 skills: candidatura, cv, follow-up e linkedin-job-outreach.
-4. Verifique se `python --version` retorna Python 3.8 ou superior; se não, me diga como instalar no meu sistema.
+4. Verifique se `python3 --version` ou `python --version` retorna Python 3.8 ou superior; se nenhum retornar, me diga como instalar no meu sistema.
 Se o comando `claude` não estiver no PATH, pare e me diga para digitar eu mesmo
 `/plugin marketplace add renanmachad/claude-code-linkedin-automation` e
 `/plugin install linkedin-job-outreach@renanmachad-plugins`.
@@ -149,7 +149,7 @@ Com o Chrome aberto e o LinkedIn logado, peça em linguagem natural:
 
 ### Tracker (também dá para usar direto)
 
-O banco fica em `~/.linkedin-job-outreach/tracker.db` (criado na primeira execução; mude com a variável `JOB_OUTREACH_DB`). Os comandos abaixo são para a instalação por `git clone`, rodando dentro da pasta da skill.
+O banco fica em `~/.linkedin-job-outreach/tracker.db` (criado na primeira execução; mude com a variável `JOB_OUTREACH_DB`). Os comandos abaixo são para a instalação por `git clone`, rodando dentro da pasta da skill. No macOS/Linux troque `python` por `python3`.
 
 ```bash
 python scripts/tracker.py check --name "Fulana" --company "Empresa"   # já contatei?

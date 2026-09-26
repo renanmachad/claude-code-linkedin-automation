@@ -9,7 +9,7 @@ argument-hint: "[dias sem resposta, padrão 7]"
 Percorre as DMs do LinkedIn, separa as conversas sobre vagas, descobre em que pé cada uma está e prepara um follow-up curto que soe como continuação natural daquela conversa. Nada é enviado sem aprovação.
 
 Caminhos (esta skill fica em `skills/follow-up/` dentro da skill principal):
-- Tracker: `python "${CLAUDE_SKILL_DIR}/../../scripts/tracker.py"`
+- Tracker: `python "${CLAUDE_SKILL_DIR}/../../scripts/tracker.py"` (use `python3` ou `python` conforme a seção "Interpretador Python" da skill principal)
 - Regras gerais, de envio e de segurança: `${CLAUDE_SKILL_DIR}/../../SKILL.md`
 - Regras de mensagem: `${CLAUDE_SKILL_DIR}/../../references/messages.md`
 - Red flags: `${CLAUDE_SKILL_DIR}/../../references/red-flags.md`
